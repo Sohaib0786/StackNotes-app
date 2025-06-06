@@ -2,7 +2,17 @@ require("dotenv").config();
 
 const config=require("./config.json");
 const mongoose=require("mongoose");
+const path=require("path");
 
+//const { fileURLToPath } = require('url');
+
+
+//const __filename = fileURLToPath(import.meta.url);
+//const path = require('path');
+//const __filename = __filename; // already available in CommonJS
+
+
+//const __dirname = path.dirname(__filename);
 mongoose.connect(config.connectionString);
 
 const User=require("./models/user.model");
@@ -11,6 +21,7 @@ const Note=require("./models/note.model");
 const express=require("express");
 const cors=require("cors");
 const app=express();
+
 
 const jwt=require("jsonwebtoken");
 const {authenticateToken} = require("./utilities");
@@ -23,10 +34,22 @@ app.use(
     })
 );
 
+ // Serve frontend build
+app.use(express.static(path.join(__dirname, "../frontend/notes-app/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/notes-app/dist/index.html"));
+});
+
+
+
 
 app.get("/",(req,res)=>{
     res.send("you are contacted at home path");
 });
+
+
+
 
 
 //Backend Ready!!!
@@ -364,38 +387,41 @@ app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
 
 //Search Notes
 
-app.get("/search-notes/", authenticateToken, async(req,res)=>{
-  const {user}=req.user;
-  const {query}=req.query;
-  
-  if(!query) {
+app.get("/search-notes/", authenticateToken, async (req, res) => {
+  const user = req.user;
+  const { query } = req.query;
+
+  if (!query) {
     return res
-           .status(400)
-           .json({error:true, message: "Search query is required"});
+      .status(400)
+      .json({ error: true, message: "Search query is required" });
   }
-    try {
-      const matchingNotes = await Note.find({
-        userId: user._id,
-        $or: [
-          {title: {$regex: new RegExp(query, "i")}},
-          {content: {$regex: new RegExp(query, "i")}},
-        ],
-      });
 
-      return res.json({
-        error:false,
-        notes: matchingNotes,
-        message: "Notes matching the search query retrieved successfully",
-      });
+  try {
+    const matchingNotes = await Note.find({
+      userId: user._id,
+      $or: [
+        { title: { $regex: new RegExp(query, "i") } },
+        { content: { $regex: new RegExp(query, "i") } },
+      ],
+    });
+
+    return res.json({
+      error: false,
+      notes: matchingNotes,
+      message: "Notes matching the search query retrieved successfully",
+    });
+
+  } catch (error) {
+    console.error(error); // Add this for debugging
+    return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
+});
 
 
-    }catch(error){
-      return res.status(500).json({
-        error:true,
-        message:"Internal Server Error",
-      });
-    }
-})
 
 
 
