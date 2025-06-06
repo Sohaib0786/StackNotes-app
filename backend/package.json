@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "postinstall": "cd ../frontend/notes-app && npm install && npm run build",
-  "start": "node index.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +16,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.1",
     "nodemon": "^3.1.10",
-    "path": "^0.12.7",
-    "url": "^0.11.4"
+    "path": "^0.12.7"
   }
 }

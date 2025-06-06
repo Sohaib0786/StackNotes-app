@@ -34,12 +34,7 @@ app.use(
     })
 );
 
- // Serve frontend build
-app.use(express.static(path.join(__dirname, "../frontend/notes-app/dist")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/notes-app/dist/index.html"));
-});
+ 
 
 
 
@@ -421,8 +416,17 @@ app.get("/search-notes/", authenticateToken, async (req, res) => {
   }
 });
 
+// Serve frontend after all API routes
+// Serve static files
+/*
+app.use(express.static(path.join(__dirname, "../frontend/notes-app/dist")));
 
+// Catch-all for SPA
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/notes-app/dist/index.html"));
+});
 
+*/
 
 
 
