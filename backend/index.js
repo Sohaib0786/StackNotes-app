@@ -39,9 +39,6 @@ app.use(
 
 
 
-app.get("/",(req,res)=>{
-    res.send("you are contacted at home path");
-});
 
 
 
